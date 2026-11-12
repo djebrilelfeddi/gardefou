@@ -103,7 +103,21 @@ button:focus-visible{outline:3px solid var(--ambre);outline-offset:3px}
 .bulle{all:unset;cursor:pointer;box-sizing:border-box;width:76px;height:76px;border-radius:38px;background:var(--nuit);border:3px solid var(--ambre);box-shadow:0 6px 18px rgba(16,36,62,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:pulse 1.8s ease-in-out infinite;transition:transform .12s}
 .bulle:active{transform:scale(.92)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(242,163,58,.6)}50%{box-shadow:0 0 0 14px rgba(242,163,58,0)}}
-.float{animation:floatIn .5s var(--E) both .25s}
+.float{animation:floatIn .5s var(--E) both .25s;touch-action:none}
+.float .tip{transition:opacity .35s ease,transform .35s ease}
+.float.notip .tip{opacity:0;transform:scale(.85)}
+.float.dragging .bulle{animation:none;transform:scale(1.08);box-shadow:0 12px 28px rgba(16,36,62,.45)}
+.float.snap{transition:left .28s var(--E),top .28s var(--E)}
+.bulle{touch-action:none}
+.gear{all:unset;cursor:pointer;width:48px;height:48px;border-radius:24px;display:flex;align-items:center;justify-content:center;margin:-8px -8px -8px 0}
+.gear:active{background:var(--sable)}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--trait)}
+.chk:last-child{border-bottom:0}
+.chk .ci{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chk .ct{font-size:19px;line-height:24px;font-weight:700}
+.chk .cs{font-size:15px;font-weight:700;margin-left:4px}
+.chk .cd{font-size:17px;line-height:23px;margin-top:2px}
+.morelink{all:unset;cursor:pointer;align-self:flex-start;display:flex;gap:6px;align-items:center;font-size:18px;font-weight:700;color:var(--nuit);text-decoration:underline;text-underline-offset:3px;min-height:44px}
 @keyframes floatIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
 
 /* feuilles, notifications, messages éphémères */
@@ -288,6 +302,7 @@ const ICON = {
   arrows:(c,s=26)=>SV(c,s,'<path d="M4 8h14l-3-3M20 16H6l3 3"/>'),
   navBack:(c)=>`<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linejoin="round"><path d="M17 4.5v15L5.5 12z"/></svg>`,
   navHome:(c)=>`<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2"><circle cx="12" cy="12" r="8"/></svg>`,
+  gear:(c,s=24)=>SV(c,s,'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',1.8),
   navMenu:(c)=>`<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2"><rect x="5" y="5" width="14" height="14" rx="2.5"/></svg>`
 };
 const SBICONS = `<svg aria-hidden="true" width="17" height="13" viewBox="0 0 17 13" fill="currentColor"><rect x="0" y="9" width="3" height="4" rx="1"/><rect x="4.5" y="6" width="3" height="7" rx="1"/><rect x="9" y="3" width="3" height="10" rx="1"/><rect x="13.5" y="0" width="3" height="13" rx="1"/></svg><svg aria-hidden="true" width="17" height="13" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M2 6.5a15 15 0 0 1 20 0M5.5 10a10 10 0 0 1 13 0M9 13.5a5 5 0 0 1 6 0"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/></svg><svg aria-hidden="true" width="26" height="13" viewBox="0 0 26 13"><rect x="0.75" y="0.75" width="21.5" height="11.5" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/><rect x="2.6" y="2.6" width="15" height="7.8" rx="1.8" fill="currentColor"/><rect x="23.4" y="4.2" width="2" height="4.6" rx="1" fill="currentColor" opacity=".55"/></svg>`;
@@ -306,28 +321,83 @@ function vib(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
 
 /* analyse locale (sans réseau) : règles simples et prévisibles pour la démo */
 const RULES = [
-  {re:/(maman|papa|mamie|papi|mamy|papy)[^]{0,60}(nouveau num|chang[ée] de num|perdu mon t[ée]l|cass[ée] mon t[ée]l)|j'ai chang[ée] de num[ée]ro|c.est mon nouveau num/i,w:3,why:'Quelqu’un se fait passer pour un proche avec un nouveau numéro.',code:true},
-  {re:/(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|fr|net|info|xyz|top|online|site|live|app|shop|org|link|click)\b)/i,w:2,why:'Il contient un lien : un vrai organisme ne vous fait pas payer par un lien dans un SMS.',link:true},
-  {re:/\bcode\b|mot de passe|identifiant|cryptogramme|carte bancaire|\brib\b|\biban\b/i,w:2,why:'Il demande un code ou vos coordonnées bancaires. Personne de sérieux ne le fait.'},
-  {re:/virement|western union|mandat cash|transcash|\bpcs\b|recharge|bitcoin|crypto/i,w:2,why:'Il demande un virement ou un paiement inhabituel.'},
-  {re:/colis|livr(aison|eur)|chronopost|la poste|mondial relay|\bdhl\b|\bups\b|fedex/i,w:1,why:'Il imite un livreur.'},
-  {re:/frais|payer|paiement|r[ée]gle[rz]|\d+[,.]\d{2}\s?€/i,w:1,why:'Il demande de payer.'},
-  {re:/urgent|imm[ée]diat|dernier rappel|sous 24|dans les 24|bloqu[ée]|suspendu|expir/i,w:1,why:'Il crée l’urgence pour vous presser.'},
-  {re:/carte vitale|ameli|\bcpf\b|compte formation|imp[oô]ts|amende|antai|\bcaf\b/i,w:1,why:'Il imite un service public.'},
-  {re:/conseiller|service (fraude|s[ée]curit[ée])|votre banque/i,w:1,why:'Il se présente comme votre banque.'}
+  {re:/(maman|papa|mamie|papi|mamy|papy)[^]{0,60}(nouveau num|chang[ée] de num|perdu mon t[ée]l|cass[ée] mon t[ée]l)|j'ai chang[ée] de num[ée]ro|c.est mon nouveau num/i,s:'bad',t:'Faux proche',why:'Quelqu’un se présente comme un proche, depuis un nouveau numéro.',code:true},
+  {re:/\bcode\b|mot de passe|identifiant|cryptogramme|carte bancaire|\brib\b|\biban\b/i,s:'bad',t:'Demande de code ou de carte',why:'Il demande un code ou vos coordonnées bancaires. Personne de sérieux ne le fait.'},
+  {re:/virement|western union|mandat cash|transcash|\bpcs\b|recharge|bitcoin|crypto/i,s:'bad',t:'Demande d’argent',why:'Il demande un virement ou un paiement inhabituel.'},
+  {re:/frais|payer|paiement|r[ée]gle[rz]|\d+[,.]\d{2}\s?€/i,s:'warn',t:'Demande de paiement',why:'Il demande de payer une petite somme : c’est l’appât classique.'},
+  {re:/urgent|imm[ée]diat|dernier rappel|sous 24|avant 24|dans les 24|bloqu[ée]|suspendu|expir/i,s:'warn',t:'Urgence',why:'Il crée l’urgence pour vous empêcher de réfléchir.'},
+  {re:/colis|livr(aison|eur)|chronopost|la poste|mondial relay|\bdhl\b|\bups\b|fedex/i,s:'warn',t:'Imite un livreur',why:'Il se présente comme un livreur.'},
+  {re:/carte vitale|ameli|\bcpf\b|compte formation|imp[oô]ts|amende|antai|\bcaf\b/i,s:'warn',t:'Imite un service public',why:'Il se présente comme un service public.'},
+  {re:/conseiller|service (fraude|s[ée]curit[ée])|votre banque/i,s:'warn',t:'Se dit de votre banque',why:'Il se présente comme votre banque.'}
 ];
-function localVerdict(text){
-  let score=0,best=null,link=false,code=false;
-  for(const r of RULES){ if(r.re.test(text)){ score+=r.w; if(!best||r.w>best.w) best=r; if(r.link) link=true; if(r.code) code=true; } }
-  if(score>=3) return {level:'arnaque', consigne: code?'Ne répondez pas. Demandez le code famille.':(link?'Ne cliquez pas sur le lien.':'Ne répondez pas.'), raison:best.why, code, source:'local'};
-  if(score>=1) return {level:'prudence', consigne:'Ne cliquez sur rien pour l’instant.', raison:best.why+' Ce n’est pas forcément une arnaque.', code, source:'local'};
-  return {level:'rien', consigne:'Aucun signe d’arnaque détecté.', raison:'Ce message ne contient ni lien, ni demande d’argent, ni demande de code.', code:false, source:'local'};
+/* sites officiels et organismes souvent imités (le vrai site, pour comparer) */
+const OFFICIELS = {'laposte.fr':'La Poste','colissimo.fr':'Colissimo','chronopost.fr':'Chronopost','ameli.fr':'l’Assurance maladie (Ameli)','impots.gouv.fr':'les Impôts','antai.gouv.fr':'l’ANTAI','caf.fr':'la CAF','moncompteformation.gouv.fr':'Mon Compte Formation','service-public.fr':'Service-Public'};
+const MARQUES = [
+  [/colis|livr|la ?poste|colissimo/i,'La Poste','laposte.fr'],
+  [/ameli|vitale|assurance.?maladie/i,'l’Assurance maladie (Ameli)','ameli.fr'],
+  [/imp[oô]t/i,'les Impôts','impots.gouv.fr'],
+  [/antai|amende/i,'l’ANTAI','antai.gouv.fr'],
+  [/\bcaf\b/i,'la CAF','caf.fr'],
+  [/cpf|compte.?formation/i,'Mon Compte Formation','moncompteformation.gouv.fr']
+];
+/* sites des scénarios de démo, déjà ouverts par GardeFou dans un espace isolé (simulation) */
+const SITES = {
+  'suivi-colis-fr.info':{age:'Créé il y a 3 jours, à l’étranger.', page:'Fausse page aux couleurs de La Poste : elle demande 1,99 €, puis votre numéro de carte bancaire et le code reçu par SMS.'},
+  'ameli-renouvellement.com':{age:'Créé il y a 6 jours.', page:'Copie du site Ameli : elle demande votre numéro de sécurité sociale, votre RIB et votre carte bancaire.'}
+};
+const EXT_LOUCHES = ['info','xyz','top','online','site','live','click','shop','link','buzz','icu'];
+function trouverLien(text){
+  const m = text.match(/(?:https?:\/\/)?(?:www\.)?((?:[a-z0-9-]+\.)+[a-z]{2,})(?:\/[^\s]*)?/i);
+  return m ? m[1].toLowerCase() : null;
+}
+function inspect(text, meta){
+  meta = meta||{};
+  const checks=[]; let lien=null;
+  const dom = trouverLien(text);
+  if(!dom){ checks.push({s:'ok', t:'Aucun lien', d:'Le message ne contient aucun lien à ouvrir.'}); }
+  else {
+    const officiel = Object.keys(OFFICIELS).find(o=>dom===o||dom.endsWith('.'+o));
+    const marque = MARQUES.find(m=>m[0].test(text)||m[0].test(dom));
+    const ext = dom.split('.').pop();
+    if(officiel){ lien={statut:'officiel', dom, nom:OFFICIELS[officiel]}; checks.push({s:'ok', t:'Lien vérifié', d:`${dom} est bien le site officiel de ${OFFICIELS[officiel]}.`}); }
+    else if(marque){ lien={statut:'faux', dom, nom:marque[1], vrai:marque[2]}; checks.push({s:'bad', t:'Faux lien', d:`Le lien ${dom} se fait passer pour ${marque[1]}, mais le vrai site est ${marque[2]}.`+(EXT_LOUCHES.includes(ext)?` L’extension « .${ext} » est très utilisée par les arnaques.`:'')}); }
+    else { lien={statut:'inconnu', dom}; checks.push({s:'warn', t:'Lien inconnu', d:`${dom} n’appartient à aucun organisme connu.`+(EXT_LOUCHES.includes(ext)?` L’extension « .${ext} » est très utilisée par les arnaques.`:'')}); }
+    const site = SITES[dom];
+    if(site){ lien.page=site.page; checks.push({s:'bad', t:'Âge du site', d:site.age+' Les vrais organismes ont des sites anciens.'}); checks.push({s:'bad', t:'Contenu du site', d:site.page}); }
+    else if(!officiel){ checks.push({s:'na', t:'Contenu du site', d:'GardeFou n’a pas pu ouvrir ce site sans risque. Ne le visitez pas.'}); }
+  }
+  if(meta.sub==='Numéro inconnu') checks.push({s:'warn', t:'Expéditeur inconnu', d:`${meta.from} n’est pas dans vos contacts.`+(/^0[67]/.test(meta.from||'')?' Les organismes n’écrivent jamais depuis un portable en 06 ou 07.':'')});
+  else if(meta.from) checks.push({s:'ok', t:'Expéditeur connu', d:`${meta.from} est un expéditeur que vous connaissez.`});
+  const hits = RULES.filter(r=>r.re.test(text));
+  hits.forEach(r=>checks.push({s:r.s, t:r.t, d:r.why}));
+  if(!hits.length) checks.push({s:'ok', t:'Texte du message', d:'Ni demande d’argent, ni demande de code, ni urgence.'});
+  const order={bad:0,warn:1,na:2,ok:3}; checks.sort((a,b)=>order[a.s]-order[b.s]);
+  return {checks, lien, hits, code:hits.some(h=>h.code)};
+}
+function localVerdict(text, meta){
+  const r=inspect(text, meta), bad=r.checks.filter(c=>c.s==='bad'), warn=r.checks.filter(c=>c.s==='warn');
+  const level = bad.length ? 'arnaque' : warn.length ? 'prudence' : 'rien';
+  let consigne, raison;
+  if(level==='arnaque'){
+    consigne = r.code ? 'Ne répondez pas. Demandez le code famille.' : (r.lien ? 'Ne cliquez pas sur le lien.' : 'Ne répondez pas.');
+    if(r.code) raison = 'Quelqu’un se fait passer pour un proche avec un nouveau numéro, et vous demande de l’argent.';
+    else if(r.lien && r.lien.statut==='faux') raison = `GardeFou a vérifié le lien : ce n’est pas le site de ${r.lien.nom}.`+(r.lien.page?' C’est une fausse page qui vole la carte bancaire.':'');
+    else raison = bad[0].d;
+  } else if(level==='prudence'){
+    consigne = 'Ne cliquez sur rien pour l’instant.';
+    raison = (r.lien&&r.lien.statut==='inconnu' ? `GardeFou a vérifié le lien : ${r.lien.dom} n’appartient à aucun organisme connu.` : warn[0].d)+' Ce n’est pas forcément une arnaque.';
+  } else {
+    consigne = 'Aucun signe d’arnaque détecté.';
+    raison = r.lien&&r.lien.statut==='officiel' ? `GardeFou a vérifié le lien : c’est bien le site officiel de ${r.lien.nom}.` : 'Ni lien, ni demande d’argent, ni demande de code.';
+  }
+  return {level, consigne, raison, code:r.code, checks:r.checks, source:'local'};
 }
 /* analyse par IA pour un message collé (si la page y a accès), sinon les règles locales */
 let samplePromise=null, sampleBlocked=false;
 function getSample(){ if(!samplePromise){ samplePromise=(window.claude&&typeof window.claude.use==='function')?window.claude.use('sample').catch(()=>null):Promise.resolve(null);} return samplePromise; }
 async function aiVerdict(text){
   const local=localVerdict(text); if(sampleBlocked) return local;
+  if(local.level==='arnaque') return local;   // lien déjà démasqué : pas besoin d'attendre l'IA
   const sample=await Promise.race([getSample(), new Promise(r=>setTimeout(()=>r(null),2500))]); if(!sample) return local;
   const prompt="Tu es GardeFou, une application qui protège les personnes âgées contre les arnaques. Analyse le message ci-dessous, reçu par une personne âgée en France.\n"+
    "Réponds UNIQUEMENT avec un objet JSON : {\"niveau\":\"arnaque\"|\"prudence\"|\"rien\",\"consigne\":\"une consigne d'action de 8 mots maximum, au vouvoiement\",\"raison\":\"une phrase simple de 25 mots maximum qui explique pourquoi\",\"faux_proche\":true|false}.\n"+
@@ -337,7 +407,9 @@ async function aiVerdict(text){
     const r=await Promise.race([sample.json(prompt,{modelTier:'quick'}), new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),9000))]);
     const lv=r&&typeof r.niveau==='string'?r.niveau.toLowerCase():'';
     if(!['arnaque','prudence','rien'].includes(lv)) return local;
-    return {level:lv, consigne:(typeof r.consigne==='string'&&r.consigne.trim())?r.consigne.trim().slice(0,90):local.consigne, raison:(typeof r.raison==='string'&&r.raison.trim())?r.raison.trim().slice(0,220):local.raison, code:!!r.faux_proche, source:'ia'};
+    const rank={rien:0,prudence:1,arnaque:2}; const level = rank[lv]>=rank[local.level] ? lv : local.level;
+    if(level!==lv) return local;
+    return {level, consigne:(typeof r.consigne==='string'&&r.consigne.trim())?r.consigne.trim().slice(0,90):local.consigne, raison:(typeof r.raison==='string'&&r.raison.trim())?r.raison.trim().slice(0,220):local.raison, code:!!r.faux_proche||local.code, checks:local.checks.concat([{s:level==='arnaque'?'bad':level==='prudence'?'warn':'ok', t:'Lecture par l’IA', d:(typeof r.raison==='string'?r.raison.trim().slice(0,220):'')}]), source:'ia'};
   }catch(e){ if(e&&['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(e.code)) sampleBlocked=true; return local; }
 }
 
@@ -431,6 +503,95 @@ function makePhone(host, handlers){
 /* barre de navigation des écrans GardeFou */
 const topBack = (title, act='back') => `<div class="row g8" style="min-height:48px"><button type="button" class="link" data-act="${act}" aria-label="Retour" style="min-width:48px;margin-left:-12px">${ICON.back('#10243E')}</button>${title?`<h1 class="display" style="font-size:28px;line-height:34px">${title}</h1>`:''}</div>`;
 
+/* liste des vérifications (« En savoir plus ») */
+const CHECK_STYLE = {bad:['var(--rouge)',()=>ICON.warn('#fff',18),'Danger','var(--rouge)'], warn:['var(--ambre)',()=>ICON.info('#10243E',18),'Attention','var(--ocreTxt)'], ok:['var(--nuit)',()=>ICON.check('#FAF5EC',18),'Vérifié','var(--nuit)'], na:['#8592A3',()=>ICON.info('#fff',18),'Non vérifié','var(--ardoise)']};
+function checksHtml(checks){ return (checks||[]).map(c=>{ const k=CHECK_STYLE[c.s]||CHECK_STYLE.na; return `<div class="chk"><span class="ci" style="background:${k[0]}">${k[1]()}</span><div class="col" style="flex:1;min-width:0"><p class="ct">${esc(c.t)}<span class="cs" style="color:${k[3]}">· ${k[2]}</span></p><p class="cd">${esc(c.d)}</p></div></div>`; }).join(''); }
+function detailsSheet(P, title, intro, checks){
+  const w=P.sheet(`<p class="display" style="font-size:26px;line-height:32px">${esc(title)}</p>
+    ${intro?`<p class="muted" style="font-size:17px;line-height:23px">${esc(intro)}</p>`:''}
+    <div class="card" style="padding:4px 16px">${checksHtml(checks)}</div>
+    <p class="small muted">GardeFou ouvre les liens dans un espace isolé, jamais sur votre téléphone. Vos messages ne sont pas conservés.</p>
+    <button type="button" class="btn nuit" data-x="ok">J’ai compris</button>`, title);
+  w.addEventListener('click',e=>{ if(e.target.closest('[data-x="ok"]')) P.closeSheet(); });
+}
+/* vérifications d'un appel (scénarios de démo) */
+const CALL_CHECKS = {
+  appel:[
+    {s:'bad', t:'Demande de code', d:'La personne demande le code reçu par SMS. Votre banque ne le demande jamais.'},
+    {s:'bad', t:'Faux conseiller', d:'Elle se présente comme le service fraude de votre banque.'},
+    {s:'warn', t:'Urgence', d:'Elle parle d’une opération à bloquer tout de suite, pour vous presser.'},
+    {s:'warn', t:'Numéro inconnu', d:'Ce numéro n’est pas dans vos contacts.'}],
+  banque:[
+    {s:'bad', t:'Appli bancaire pendant l’appel', d:'Vous avez ouvert votre banque pendant un appel inconnu : c’est le moment où les escrocs font valider un virement.'},
+    {s:'warn', t:'Numéro inconnu', d:'Ce numéro n’est pas dans vos contacts.'},
+    {s:'ok', t:'Rien n’est parti', d:'GardeFou a affiché STOP avant toute opération.'}]
+};
+
+/* la pastille : déplaçable, collée au bord le plus proche, sa place est retenue */
+function attachBulle(layer, o){
+  const H=layer.clientHeight, W=layer.clientWidth, B=76, M=14;
+  const el=document.createElement('div'); el.className='float'+(o.oncall?' oncall':'')+(o.tip?'':' notip'); el.dataset.float='1';
+  el.innerHTML=(o.tip?`<p class="tip">${esc(o.tip)}</p>`:'')+`<button type="button" class="bulle" data-act="${o.act}" aria-label="${esc(o.label)}">${LOGO('#FAF5EC','#F2A33A',o.oncall?30:32,o.oncall?40:43)}</button>`;
+  const KEY='bulle-'+(o.key||'msg'), MIN=o.minTop||8, MAX=H-B-(o.bottomGap||8);
+  let pos=null; try{ pos=JSON.parse(store.get(KEY,'null')); }catch(e){}
+  let side=(pos&&pos.side)||'right';
+  let top=Math.round(pos&&typeof pos.y==='number' ? pos.y*H : (o.defTop||H*0.35));
+  top=Math.max(MIN, Math.min(MAX, top));
+  const tipEl=()=>el.querySelector('.tip');
+  function place(){
+    el.style.top=top+'px';
+    if(tipEl()){ el.style.flexDirection= side==='right'?'row':'row-reverse'; if(side==='right'){ el.style.right=M+'px'; el.style.left='auto'; } else { el.style.left=M+'px'; el.style.right='auto'; } }
+    else { el.style.right='auto'; el.style.left=(side==='right'?W-M-B:M)+'px'; }
+  }
+  place(); layer.appendChild(el);
+  const dropTip=()=>{ const t=tipEl(); if(!t) return; el.classList.add('notip'); setTimeout(()=>{ if(t.parentNode){ t.remove(); place(); } }, 360); };
+  if(o.tip) setTimeout(dropTip, 2000);                    // la bulle d'aide ne reste que 2 secondes
+  const b=el.querySelector('.bulle');
+  let down=false, moved=false, sx=0, sy=0, bx=0, by=0, k=1;
+  b.addEventListener('pointerdown', e=>{
+    down=true; moved=false; sx=e.clientX; sy=e.clientY;
+    const lr=layer.getBoundingClientRect(), br=b.getBoundingClientRect(); k=lr.width/layer.offsetWidth||1;
+    bx=(br.left-lr.left)/k; by=(br.top-lr.top)/k;
+    try{ b.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  b.addEventListener('pointermove', e=>{
+    if(!down) return;
+    const dx=(e.clientX-sx)/k, dy=(e.clientY-sy)/k;
+    if(!moved){ if(Math.hypot(dx,dy)<8) return; moved=true; const t=tipEl(); if(t) t.remove(); el.classList.add('notip','dragging'); el.classList.remove('snap'); el.style.flexDirection='row'; el.style.right='auto'; }
+    const x=Math.max(0, Math.min(W-B, bx+dx)); top=Math.max(MIN, Math.min(MAX, by+dy));
+    el.style.left=x+'px'; el.style.top=top+'px';
+  });
+  const end=e=>{
+    if(!down) return; down=false;
+    if(!moved) return;
+    const x=parseFloat(el.style.left)||0; side = (x+B/2) < W/2 ? 'left' : 'right';
+    el.classList.remove('dragging'); el.classList.add('snap'); place();
+    store.set(KEY, JSON.stringify({side, y: top/H}));
+    b.dataset.dragged='1'; setTimeout(()=>{ delete b.dataset.dragged; }, 80);
+  };
+  b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end);
+  b.addEventListener('click', e=>{ if(b.dataset.dragged){ e.stopPropagation(); e.preventDefault(); } }, true);
+  return el;
+}
+
+/* réglages de la démo : derrière l'engrenage du menu □ */
+function devPanel(P, senior, act){
+  const w=P.sheet(`<div class="row g8"><button type="button" class="gear" data-v="back" aria-label="Retour à la simulation" style="margin:-8px 0 -8px -12px">${ICON.back('#3D5068',24)}</button><p class="demohead">Réglages de la démo</p></div>
+    <div class="card col g4" style="padding:12px 14px"><p style="font-size:15px;font-weight:700;color:var(--ardoise)">Liaison entre téléphones</p><p style="font-size:17px;line-height:23px">${esc(diagText())}</p></div>
+    <button type="button" class="chip" data-v="maj"><span style="flex:1">Rechercher une mise à jour</span><span class="muted" style="font-size:15px">v. ${esc(DEV?'dev':APP_VERSION)}</span></button>
+    <button type="button" class="chip" data-v="full"><span>Plein écran</span></button>
+    ${senior?`<button type="button" class="chip" data-v="onb"><span>Revoir l’installation</span></button>`:''}
+    <div class="row g10"><button type="button" class="chip" data-v="reset" style="justify-content:center">Remettre à zéro</button><button type="button" class="chip" data-v="quit" style="justify-content:center">Changer de rôle</button></div>
+    <button type="button" class="btn nuit" data-v="close">Fermer</button>`, 'Réglages de la démo');
+  w.addEventListener('click', e=>{ const b=e.target.closest('[data-v]'); if(!b) return; const k=b.dataset.v;
+    if(k==='back'){ P.closeSheet(true); P.host.querySelector('[data-nav="menu"]').click(); return; }
+    P.closeSheet();
+    if(k==='maj') checkUpdate('manual');
+    else if(k==='full') goFull();
+    else if(k!=='close') act(k);
+  });
+}
+
 /* écrans d'appel communs aux deux téléphones */
 function callViews(call, opts){
   const name = call.who==='inconnu' ? CONFIG.appelInconnu.numero : call.name;
@@ -460,7 +621,7 @@ function callViews(call, opts){
           <div class="bars" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
         <div class="row g10 drop" style="padding:12px 24px 0;color:#C9CED6;align-items:flex-start">${ICON.spk('#C9CED6')}<p style="font-size:17px;line-height:22px">Votre correspondant a été informé de l’analyse.</p></div>
         <button type="button" class="link" data-act="c-stopan" style="color:#C9CED6;align-self:center">Arrêter l’analyse</button>`
-      : (opts.bulle?`<div class="float oncall" style="top:250px"><p class="tip">Un doute ?</p><button type="button" class="bulle" data-act="c-doubt" aria-label="Faire analyser cet appel par GardeFou">${LOGO('#FAF5EC','#F2A33A',30,40)}</button></div>`:'')}
+ : ''}
       <div style="margin-top:auto;padding:0 20px 22px" class="col g18">
         <div class="row" style="justify-content:space-around"><button type="button" class="ctl${call.spk?' on':''}" data-act="c-spk"><span class="c">${ICON.spk(call.spk?'#1B1F24':'#fff',28)}</span>Haut-parleur</button><button type="button" class="ctl${call.mute?' on':''}" data-act="c-mute"><span class="c">${ICON.mic(call.mute?'#1B1F24':'#fff',28)}</span>Micro</button></div>
         <button type="button" class="roundb red" data-act="call-hangup" aria-label="Raccrocher" style="align-self:center">${ICON.hang('#fff')}</button>
@@ -473,7 +634,7 @@ function callViews(call, opts){
    ===================================================================== */
 function createSenior(host, send){
   const st = {screen:'home', stack:['launcher','home'], convos:[], convoId:null, verdict:null, verdictFrom:null, alerts:0, reply:null,
-    word:CONFIG.codeFamille, showWord:false, dejaDone:{}, verifyText:'', linked:false, call:null, stopType:null, overlay:false, analysingNote:''};
+    word:CONFIG.codeFamille, showWord:false, dejaDone:{}, verifyText:'', linked:false, call:null, stopType:null, overlay:false, analysingNote:'', history:[]};
   let callTimer=null, analyseTimer=null, ringTimer=null, answerTimer=null;
   const P = makePhone(host, {back, home:goHome, menu:openDemo});
   const THEME = {launcher:['nuit'], inbox:['white'], sms:['white'], dialer:['white'], analysing:['scrim','creme'], verdict:['scrim','creme'], ring:['os'], outcall:['os'], call:['os'], stop:['rouge'], bank:['banque','white'], onb1:['nuit'], onb2:['creme'], onb3:['creme']};
@@ -487,8 +648,8 @@ function createSenior(host, send){
   const convo = ()=>st.convos.find(c=>c.id===st.convoId);
 
   /* ---------- navigation ---------- */
-  function render(anim){ const t=THEME[st.screen]||['creme']; P.theme(t[0], t[1]||t[0]); P.show(V[st.screen](), anim); after(); syncPill(); }
-  function refresh(){ P.refresh(V[st.screen]()); after(); syncPill(); }
+  function render(anim){ const t=THEME[st.screen]||['creme']; P.theme(t[0], t[1]||t[0]); P.show(V[st.screen](), anim); after(true); syncPill(); }
+  function refresh(){ P.refresh(V[st.screen]()); after(false); syncPill(); }
   function push(s, anim='push'){ st.stack.push(s); st.screen=s; render(anim); }
   function replaceTop(s, anim='fade'){ st.stack[st.stack.length-1]=s; st.screen=s; render(anim); }
   function resetTo(stack, anim='fade'){ st.stack=stack.slice(); st.screen=stack[stack.length-1]; render(anim); }
@@ -512,12 +673,12 @@ function createSenior(host, send){
   }
 
   /* ---------- liens avec l'aidante ---------- */
-  function alertAidant(type, detail){ st.alerts++; send({kind:'alert', id:uid(), at:Date.now(), type, detail:(detail||'').slice(0,160)}); }
+  function record(e){ st.history.unshift({id:uid(), at:Date.now(), ...e}); if(st.history.length>30) st.history.pop(); }
+  function alertAidant(type, detail){ send({kind:'alert', id:uid(), at:Date.now(), type, detail:(detail||'').slice(0,160)}); }
 
   /* ---------- éléments répétés ---------- */
   const badge = ()=>`<span class="badge${st.linked?'':' off'}" style="margin-left:auto"><i></i>${st.linked?'Relié à '+esc(A):'Non relié'}</span>`;
   const replyBanner = ()=> st.reply ? `<div class="banner drop" role="status" data-act="reply-ok" style="cursor:pointer">${ICON.bell('#10243E',24)}<span><span style="display:block">${esc(A)} vous écrit :</span><span style="display:block;font-weight:500">${esc(st.reply)}</span></span></div>` : '';
-  const floatBulle = top => `<div class="float" style="top:${top}px" data-float><p class="tip">Un doute ? Appuyez ici</p><button type="button" class="bulle" data-act="bulle" aria-label="Analyser ce message avec GardeFou">${LOGO('#FAF5EC','#F2A33A',32,43)}</button></div>`;
 
   /* ---------- les écrans ---------- */
   const V = {
@@ -547,7 +708,6 @@ function createSenior(host, send){
         ${c.msgs.map(m=>`<div class="bub${m.me?' me':''}">${esc(m.text)}</div>`).join('')}
       </div>
       <div style="position:sticky;bottom:0;padding:12px 16px 16px;background:#fff;border-top:1px solid #E1E4E8"><div style="height:52px;border:1px solid #C9CED6;border-radius:26px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;color:#57606A;font-size:18px">Message${ICON.send('#9AA3AE')}</div></div>
-      ${floatBulle(180)}
     </div>`; },
 
     dialer:()=>`<div class="scr os">
@@ -575,10 +735,11 @@ function createSenior(host, send){
       <div class="row g12" style="min-height:48px">${LOGO('#10243E','#BF6A00',31,42)}<p class="display" style="font-size:28px">GardeFou</p>${badge()}</div>
       ${replyBanner()}
       <div class="col g18 stg">
-      <div class="navycard row g16">
-        <div class="icirc" style="background:var(--ambre)">${st.alerts?ICON.warn('#10243E',30):ICON.check('#10243E',32)}</div>
-        <div class="col g4"><p class="display" style="font-size:28px;line-height:34px">${st.alerts?'Vous avez été protégée':'Tout va bien'}</p><p style="font-size:19px;color:var(--brume)">${st.alerts?(st.alerts===1?'1 alerte aujourd’hui.':st.alerts+' alertes aujourd’hui.'):'Aucune alerte aujourd’hui.'}</p></div>
-      </div>
+      <button type="button" class="navycard row g16" data-act="push" data-arg="hist" style="all:unset;box-sizing:border-box;cursor:pointer;background:var(--nuit);color:var(--creme);border-radius:24px;padding:22px;display:flex;align-items:center;gap:16px;width:100%">
+        <div class="icirc" style="background:var(--ambre)">${st.history.length?ICON.warn('#10243E',30):ICON.check('#10243E',32)}</div>
+        <div class="col g4" style="flex:1"><p class="display" style="font-size:28px;line-height:34px">${st.history.length?'Vous avez été protégée':'Tout va bien'}</p><p style="font-size:19px;color:var(--brume)">${st.history.length?(st.history.length===1?'1 alerte aujourd’hui.':st.history.length+' alertes aujourd’hui.'):'Aucune alerte aujourd’hui.'}</p></div>
+        ${ICON.chev('#FAF5EC',24)}
+      </button>
       <button type="button" class="big" data-act="push" data-arg="verify">${ICON.msg('#10243E')}<span><span class="t">Vérifier un message</span><span class="s">Collez un message douteux</span></span></button>
       <button type="button" class="big" data-act="call-julie">${ICON.phone('#10243E',44)}<span><span class="t">Appeler ${esc(A)}</span><span class="s">Votre proche de confiance</span></span></button>
       <button type="button" class="big" data-act="push" data-arg="code">${ICON.key('#10243E')}<span><span class="t">Code famille</span><span class="s">Contre les faux proches</span></span></button>
@@ -589,6 +750,20 @@ function createSenior(host, send){
       </div>
       <button type="button" class="link" data-act="push" data-arg="deja">J’ai déjà cliqué ou donné un code</button>
       </div></div>`,
+
+    hist:()=>{ const n=st.history.length;
+      return `<div class="scr pad col g16">
+      ${topBack('Historique')}
+      <div class="col g14 stg">
+      <div class="navycard row g16"><div class="icirc" style="background:var(--ambre)">${n?ICON.warn('#10243E',30):ICON.check('#10243E',32)}</div>
+        <div class="col g4"><p class="display" style="font-size:26px;line-height:32px">${n?(n===1?'1 arnaque évitée':n+' arnaques évitées'):'Aucune alerte'}</p><p style="font-size:18px;color:var(--brume)">Aujourd’hui</p></div></div>
+      ${n?st.history.map(h=>{ const red=h.level==='arnaque';
+        return `<button type="button" class="big" data-act="h-see" data-arg="${esc(h.id)}" style="min-height:88px;border-width:1px;border-color:var(--trait)">
+          <span class="icirc" style="width:44px;height:44px;background:${red?'var(--rouge)':'var(--ambre)'}">${red?ICON.warn('#fff',24):ICON.info('#10243E',24)}</span>
+          <span style="flex:1;min-width:0"><span class="t" style="font-size:20px;line-height:25px">${esc(h.title)}</span><span class="s">${esc(h.sub)} · ${hhmm(h.at)}</span></span>${ICON.chev('#10243E')}</button>`; }).join('')
+        :`<p style="font-size:19px;line-height:27px">Quand GardeFou vous protège d’un message ou d’un appel, vous le retrouvez ici.</p>`}
+      <p class="small muted">Seules les alertes sont gardées. Vos messages ne sont pas conservés.</p>
+      </div></div>`; },
 
     analysing:()=>`<div class="scr col" style="background:var(--scrim);justify-content:flex-end">
       <div class="sheet rise" style="align-items:center;padding:40px 20px 56px;gap:18px;border-radius:26px 26px 0 0" role="status">
@@ -605,16 +780,17 @@ function createSenior(host, send){
       else if(lv==='prudence') btns=`<button type="button" class="btn nuit" data-act="v-ask">Demander à ${esc(A)}</button><button type="button" class="btn blanc" data-act="v-delete">Supprimer le message</button>`;
       else btns=`<button type="button" class="btn nuit" data-act="back">C’est noté</button><button type="button" class="btn blanc" data-act="v-ask">Demander à ${esc(A)}</button>`;
       return `<div class="scr col" style="background:var(--scrim)">
-        <div aria-hidden="true" style="flex:1;min-height:96px;padding:28px 16px 16px;opacity:.55">${st.verdictFrom?`<div style="max-width:290px;background:#ECEFF3;border-radius:22px;padding:14px 16px"><p style="font-size:18px;line-height:25px;color:#1B1F24;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${esc(st.verdictFrom)}</p></div>`:''}</div>
+        <div aria-hidden="true" style="flex:1;min-height:40px"></div>
         <div class="sheet" style="gap:16px;border-radius:26px 26px 0 0">
           <div class="row g14 drop">${ic}<p class="display" style="font-size:30px;line-height:36px;color:${color}">${title}</p></div>
           <p style="font-size:23px;line-height:30px;font-weight:700">${esc(v.consigne)}</p>
           <p style="font-size:19px;line-height:27px">${esc(v.raison)}</p>
+          ${v.checks&&v.checks.length?`<button type="button" class="morelink" data-act="v-more">En savoir plus${ICON.chev('#10243E',20)}</button>`:''}
           ${v.code?`<button type="button" class="chip" data-act="push" data-arg="code" style="background:var(--sable);border:0;font-weight:700">${ICON.key('#10243E',28)}<span>Un faux proche ? Demandez-lui le code famille.</span></button>`:''}
           ${lv==='rien'?`<div style="background:var(--sable);border-radius:16px;padding:12px 14px"><p style="font-size:18px;line-height:24px">Un doute quand même ? Ne répondez pas et demandez à ${esc(A)}.</p></div>`:''}
           <div class="col g12">${btns}</div>
           ${lv!=='rien'?`<p class="small muted">${esc(A)} n’est prévenue que si vous le décidez.</p><button type="button" class="link" data-act="push" data-arg="deja">J’ai déjà cliqué ou répondu</button><button type="button" class="link" data-act="back">Fermer</button>`:''}
-          <p class="small muted">${v.source==='ia'?'Analyse par IA. Le message n’est pas conservé.':'Analyse sur le téléphone. Le message n’est pas conservé.'}</p>
+          <p class="small muted">${v.source==='ia'?'Lien vérifié par GardeFou, texte lu par l’IA. Le message n’est pas conservé.':'Lien et message vérifiés par GardeFou. Le message n’est pas conservé.'}</p>
         </div></div>`; },
 
     verify:()=>`<div class="scr pad col g16">
@@ -698,12 +874,12 @@ function createSenior(host, send){
     call:()=>callViews(st.call,{bulle:st.call.who==='inconnu', banner: st.reply?`<div style="padding:0 20px 10px">${replyBanner()}</div>`:''}).call()
   });
 
-  function after(){
+  function after(fresh){
     const L=P.cur; if(!L) return;
-    if(st.screen==='call') updTimer();
-    if(st.screen==='sms'){ // la pastille se place juste sous le dernier message
-      const msgs=L.querySelector('[data-msgs]'), fl=L.querySelector('[data-float]');
-      if(msgs&&fl){ const last=msgs.lastElementChild; const top=Math.max(110, last.offsetTop+last.offsetHeight+24); fl.style.top=top+'px'; }
+    if(st.screen==='call'){ updTimer(); if(st.call&&st.call.who==='inconnu'&&st.call.state==='active') attachBulle(L,{act:'c-doubt', key:'appel', tip:fresh?'Un doute ?':'', oncall:true, defTop:250, minTop:(L.querySelector('.calltop')||{offsetHeight:180}).offsetHeight+12, bottomGap:230, label:'Faire analyser cet appel par GardeFou'}); }
+    if(st.screen==='sms'){ // par défaut, la pastille se place juste sous le dernier message
+      const msgs=L.querySelector('[data-msgs]'); const last=msgs&&msgs.lastElementChild;
+      attachBulle(L,{act:'bulle', key:'msg', bottomGap:84, tip:fresh?'Un doute ? Appuyez ici':'', defTop: last?Math.max(110, last.offsetTop+last.offsetHeight+24):180, label:'Analyser ce message avec GardeFou'});
     }
     if(st.screen==='verify'){ const ta=L.querySelector('#vtext'); if(ta) ta.addEventListener('input',()=>{ st.verifyText=ta.value; }); }
     if(st.screen==='bank' && st.call && st.call.who==='inconnu' && st.call.state!=='ring'){
@@ -755,17 +931,22 @@ function createSenior(host, send){
     if(st.stack[st.stack.length-1]==='bank'){ st.stack.push('stop'); st.screen='stop'; render('pop'); }
     else replaceTop('stop','pop');
     vib([300,120,300]);
+    record({kind:type, level:'arnaque', title:type==='banque'?'Appli bancaire protégée':'Appel suspect arrêté', sub:CONFIG.appelInconnu.numero, intro:type==='banque'?'Vous avez ouvert votre banque pendant un appel inconnu.':'Vous avez demandé à GardeFou d’analyser l’appel.', checks:CALL_CHECKS[type]});
     alertAidant(type==='banque'?'banque':'appel');
   }
 
   /* ---------- analyse d'un message ---------- */
   async function analyse(text, fromSms){
-    st.analysingNote = fromSms?'':'Quelques secondes…';
+    const c = fromSms ? convo() : null;
+    const meta = c ? {from:c.name, sub:c.sub} : null;
+    st.analysingNote = fromSms?'Vérification du lien et de l’expéditeur…':'Quelques secondes…';
     push('analysing','up');
     const t0=Date.now();
-    const v = fromSms ? localVerdict(text) : await aiVerdict(text);
+    const v = fromSms ? localVerdict(text, meta) : await aiVerdict(text);
     const wait = Math.max(0, CONFIG.dureeAnalyseMessage-(Date.now()-t0));
-    setTimeout(()=>{ if(st.screen!=='analysing') return; st.verdict=v; st.verdictFrom=fromSms?text:null; replaceTop('verdict','fade'); if(v.level==='arnaque') vib([80,60,80]); }, wait);
+    setTimeout(()=>{ if(st.screen!=='analysing') return; st.verdict=v; st.verdictFrom=fromSms?text:null;
+      if(v.level!=='rien') record({kind:'sms', level:v.level, title:v.level==='arnaque'?'Message frauduleux détecté':'Message douteux', sub:c?c.name:'Message vérifié', intro:v.raison, checks:v.checks});
+      replaceTop('verdict','fade'); if(v.level==='arnaque') vib([80,60,80]); }, wait);
   }
 
   /* ---------- démo : réception d'un SMS ---------- */
@@ -789,31 +970,27 @@ function createSenior(host, send){
   /* ---------- commandes de démonstration ---------- */
   function openDemo(){
     const inCall = st.call && st.call.who==='inconnu' && st.call.state!=='ring';
-    const w=P.sheet(`<p class="demohead">Commandes de démonstration</p>
-      <p class="small muted">Elles simulent ce qui arrive sur le téléphone de ${esc(S)}.</p>
-      <p class="small" style="background:#fff;border-radius:12px;padding:10px 12px;border:1px solid var(--trait)"><strong>Liaison :</strong> ${esc(diagText())}</p>
+    const w=P.sheet(`<div class="row" style="justify-content:space-between"><p class="demohead">Simulation</p><button type="button" class="gear" data-d="dev" aria-label="Réglages de la démo">${ICON.gear('#3D5068')}</button></div>
+      <p class="small muted">Ce qui arrive sur le téléphone de ${esc(S)}.</p>
       <button type="button" class="chip" data-d="sms-colis">${ICON.bubble('#10243E',24)}<span>Recevoir un faux SMS de colis</span></button>
       <button type="button" class="chip" data-d="sms-proche">${ICON.bubble('#10243E',24)}<span>Recevoir un SMS d’un faux proche</span></button>
       <button type="button" class="chip" data-d="sms-pharma">${ICON.bubble('#10243E',24)}<span>Recevoir un SMS normal</span></button>
       <button type="button" class="chip" data-d="call">${ICON.phone('#10243E',24)}<span>Recevoir un appel d’un numéro inconnu</span></button>
       ${inCall?`<button type="button" class="chip" data-d="bank">${ICON.bank('#10243E',24)}<span>Pendant l’appel : ouvrir l’appli bancaire</span></button>`:''}
-      <button type="button" class="chip" data-d="onb">${LOGO('#10243E','#BF6A00',18,24)}<span>Revoir l’installation</span></button>
-      <button type="button" class="chip" data-d="full"><span>Plein écran</span></button>
-      <button type="button" class="chip" data-d="maj"><span style="flex:1">Rechercher une mise à jour</span><span class="muted" style="font-size:15px">v. ${esc(DEV?'dev':APP_VERSION)}</span></button>
-      <div class="row g10"><button type="button" class="chip" data-d="reset" style="justify-content:center">Remettre à zéro</button><button type="button" class="chip" data-d="quit" style="justify-content:center">Changer de rôle</button></div>
-      <button type="button" class="btn nuit" data-d="close">Fermer</button>`, 'Commandes de démonstration');
+      <button type="button" class="btn nuit" data-d="close">Fermer</button>`, 'Simulation');
     w.addEventListener('click', e=>{ const b=e.target.closest('[data-d]'); if(!b) return; const d=b.dataset.d;
-      if(d==='full'){ goFull(); P.closeSheet(); return; }
-      if(d==='maj'){ P.closeSheet(); checkUpdate('manual'); return; }
+      if(d==='dev'){ devPanel(P, true, k=>devAction(k)); return; }
       P.closeSheet();
       if(['sms-colis','sms-proche','sms-pharma','call'].includes(d)) st.reply=null;
       if(d.startsWith('sms-')) setTimeout(()=>receiveSms(d.slice(4)), 1300);
       else if(d==='call') setTimeout(()=>incomingCall('inconnu'), 1300);
       else if(d==='bank'){ st.stack=['launcher','bank']; st.screen='bank'; render('open'); }
-      else if(d==='onb') resetTo(['onb1'],'fade');
-      else if(d==='reset'){ endCall(true); Object.assign(st,{alerts:0,reply:null,dejaDone:{},verifyText:'',showWord:false,verdict:null}); resetConvos(); send({kind:'reset', id:uid(), at:Date.now()}); resetTo(['launcher','home'],'fade'); P.toast('Démo remise à zéro'); }
-      else if(d==='quit'){ endCall(true); store.set('role',''); location.hash=''; }
     });
+  }
+  function devAction(k){
+    if(k==='onb') resetTo(['onb1'],'fade');
+    else if(k==='reset'){ endCall(true); Object.assign(st,{reply:null,dejaDone:{},verifyText:'',showWord:false,verdict:null,history:[]}); resetConvos(); send({kind:'reset', id:uid(), at:Date.now()}); resetTo(['launcher','home'],'fade'); P.toast('Démo remise à zéro'); }
+    else if(k==='quit'){ endCall(true); store.set('role',''); location.hash=''; }
   }
 
   /* ---------- actions ---------- */
@@ -828,6 +1005,8 @@ function createSenior(host, send){
         else { st.stack=['launcher',arg]; st.screen=arg; render('open'); }
         break;
       case 'convo': openConvo(arg); break;
+      case 'v-more': detailsSheet(P, 'Ce que GardeFou a vérifié', st.verdictFrom?'Le lien, le site, l’expéditeur et le texte du message.':'Le lien et le texte du message.', st.verdict.checks); break;
+      case 'h-see': { const h=st.history.find(x=>x.id===arg); if(h) detailsSheet(P, h.title, h.intro, h.checks); break; }
       case 'tip': P.sheet(`<p class="display" style="font-size:26px;line-height:32px">Le faux SMS de colis</p>
         <p style="font-size:19px;line-height:27px">1. Un message dit qu’un colis attend et qu’il faut payer quelques euros.</p>
         <p style="font-size:19px;line-height:27px">2. Le lien mène à un faux site qui vole votre carte bancaire.</p>
@@ -875,7 +1054,7 @@ function createSenior(host, send){
       else if(m.kind==='answer'){ if(old) return; const c=st.call; if(c&&c.state==='out'){ clearTimeout(answerTimer); c.state='active'; c.start=Date.now(); replaceTop('call','fade'); clearInterval(callTimer); callTimer=setInterval(()=>{ updTimer(); syncPill(); },1000); } }
       else if(m.kind==='hangup'){ if(old) return; if(st.call&&st.call.who==='aidant'){ endCall(true); if(['ring','outcall','call'].includes(st.screen)) leaveCallScreens('down'); P.toast('Appel terminé.'); } }
     },
-    linked(v){ if(st.linked!==v){ st.linked=v; if(v) P.toast('Relié au téléphone de '+A+'.'); if(['home','onb3'].includes(st.screen)) refresh(); } },
+    linked(v){ if(st.linked!==v){ st.linked=v; if(['home','onb3'].includes(st.screen)) refresh(); } },
     busy(){ return !!st.call || ['stop','analysing','verdict','ring','outcall','call'].includes(st.screen); },
     toast(t){ P.toast(t); }
   };
@@ -973,22 +1152,16 @@ function createAidant(host, send){
   function openAlert(){ P.hideHun(); if(st.screen==='alert'){ refresh(); return; } push('alert','up'); }
 
   function openDemo(){
-    const w=P.sheet(`<p class="demohead">Commandes de démonstration</p>
-      <p class="small muted">Sans le téléphone de ${esc(S)}, simulez une alerte.</p>
-      <p class="small" style="background:#fff;border-radius:12px;padding:10px 12px;border:1px solid var(--trait)"><strong>Liaison :</strong> ${esc(diagText())}</p>
-      <button type="button" class="chip" data-d="appel">${ICON.warn('#B42318',24)}<span>Simuler une alerte « appel suspect »</span></button>
-      <button type="button" class="chip" data-d="sms">${ICON.bubble('#10243E',24)}<span>Simuler un message suspect signalé</span></button>
-      <button type="button" class="chip" data-d="full"><span>Plein écran</span></button>
-      <button type="button" class="chip" data-d="maj"><span style="flex:1">Rechercher une mise à jour</span><span class="muted" style="font-size:15px">v. ${esc(DEV?'dev':APP_VERSION)}</span></button>
-      <div class="row g10"><button type="button" class="chip" data-d="reset" style="justify-content:center">Remettre à zéro</button><button type="button" class="chip" data-d="quit" style="justify-content:center">Changer de rôle</button></div>
-      <button type="button" class="btn nuit" data-d="close">Fermer</button>`, 'Commandes de démonstration');
+    const w=P.sheet(`<div class="row" style="justify-content:space-between"><p class="demohead">Simulation</p><button type="button" class="gear" data-d="dev" aria-label="Réglages de la démo">${ICON.gear('#3D5068')}</button></div>
+      <p class="small muted">Si le téléphone de ${esc(S)} n’est pas là, simulez une alerte.</p>
+      <button type="button" class="chip" data-d="appel">${ICON.warn('#B42318',24)}<span>Alerte « appel suspect »</span></button>
+      <button type="button" class="chip" data-d="banque">${ICON.bank('#10243E',24)}<span>Alerte « appli bancaire pendant un appel »</span></button>
+      <button type="button" class="chip" data-d="sms">${ICON.bubble('#10243E',24)}<span>Alerte « message suspect »</span></button>
+      <button type="button" class="btn nuit" data-d="close">Fermer</button>`, 'Simulation');
     w.addEventListener('click', e=>{ const b=e.target.closest('[data-d]'); if(!b) return; const d=b.dataset.d;
-      if(d==='full'){ goFull(); P.closeSheet(); return; }
-      if(d==='maj'){ P.closeSheet(); checkUpdate('manual'); return; }
+      if(d==='dev'){ devPanel(P, false, k=>{ if(k==='reset'){ endCall(true); st.history=[]; st.current=null; st.stack=['dash']; st.screen='dash'; render('fade'); P.toast('Démo remise à zéro'); } else if(k==='quit'){ endCall(true); store.set('role',''); location.hash=''; } }); return; }
       P.closeSheet();
-      if(d==='appel'||d==='sms'){ setTimeout(()=>receiveAlert({kind:'alert', id:uid(), at:Date.now(), type:d, detail:d==='sms'?'Il contient un lien : un vrai organisme ne vous fait pas payer par un lien dans un SMS.':''}, false), 1200); }
-      else if(d==='reset'){ endCall(true); st.history=[]; st.current=null; st.stack=['dash']; st.screen='dash'; render('fade'); P.toast('Démo remise à zéro'); }
-      else if(d==='quit'){ endCall(true); store.set('role',''); location.hash=''; }
+      if(['appel','banque','sms'].includes(d)){ setTimeout(()=>receiveAlert({kind:'alert', id:uid(), at:Date.now(), type:d, detail:d==='sms'?'GardeFou a vérifié le lien : ce n’est pas le site de La Poste. C’est une fausse page qui vole la carte bancaire.':''}, false), 1200); }
     });
   }
   function receiveAlert(m, old){
@@ -1026,7 +1199,7 @@ function createAidant(host, send){
       else if(m.kind==='answer'){ if(old) return; if(st.call&&st.call.state==='out'){ clearTimeout(answerTimer); startActive(); } }
       else if(m.kind==='hangup'){ if(old) return; if(st.call){ endCall(true); if(['ring','outcall','call'].includes(st.screen)) leaveCallScreens('down'); P.toast('Appel terminé.'); } }
     },
-    linked(v){ if(st.linked!==v){ st.linked=v; if(v) P.toast('Relié au téléphone de '+SU+'.'); if(st.screen==='dash') refresh(); } },
+    linked(v){ if(st.linked!==v){ st.linked=v; if(st.screen==='dash') refresh(); } },
     busy(){ return !!st.call || ['alert','ring','outcall','call'].includes(st.screen); },
     toast(t){ P.toast(t); },
     word(){ return st.word; }
