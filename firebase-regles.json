@@ -1,14 +1,9 @@
 {
   "rules": {
-    ".read": false,
-    ".write": false,
     "gardefou": {
       "$code": {
-        "$role": {
-          ".read": "$role === 'senior' || $role === 'aidant'",
-          ".write": "$role === 'senior' || $role === 'aidant'",
-          ".validate": "newData.hasChildren(['role', 't']) || !newData.exists() || newData.hasChild('online')"
-        }
+        ".read": true,
+        ".write": true
       }
     }
   }
