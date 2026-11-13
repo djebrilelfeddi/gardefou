@@ -633,7 +633,7 @@ function callViews(call, opts){
    4. TÉLÉPHONE DE LA PERSONNE PROTÉGÉE (Monique)
    ===================================================================== */
 function createSenior(host, send){
-  const st = {screen:'home', stack:['launcher','home'], convos:[], convoId:null, verdict:null, verdictFrom:null, alerts:0, reply:null,
+  const st = {screen:'launcher', stack:['launcher'], convos:[], convoId:null, verdict:null, verdictFrom:null, alerts:0, reply:null,
     word:CONFIG.codeFamille, showWord:false, dejaDone:{}, verifyText:'', linked:false, call:null, stopType:null, overlay:false, analysingNote:'', history:[]};
   let callTimer=null, analyseTimer=null, ringTimer=null, answerTimer=null;
   const P = makePhone(host, {back, home:goHome, menu:openDemo});
@@ -989,7 +989,7 @@ function createSenior(host, send){
   }
   function devAction(k){
     if(k==='onb') resetTo(['onb1'],'fade');
-    else if(k==='reset'){ endCall(true); Object.assign(st,{reply:null,dejaDone:{},verifyText:'',showWord:false,verdict:null,history:[]}); resetConvos(); send({kind:'reset', id:uid(), at:Date.now()}); resetTo(['launcher','home'],'fade'); P.toast('Démo remise à zéro'); }
+    else if(k==='reset'){ endCall(true); Object.assign(st,{reply:null,dejaDone:{},verifyText:'',showWord:false,verdict:null,history:[]}); resetConvos(); send({kind:'reset', id:uid(), at:Date.now()}); resetTo(['launcher'],'fade'); P.toast('Démo remise à zéro'); }
     else if(k==='quit'){ endCall(true); store.set('role',''); location.hash=''; }
   }
 
@@ -1038,7 +1038,7 @@ function createSenior(host, send){
       case 'onb': replaceTop(arg,'push'); break;
       case 'onb-perm': { const w=document.createElement('div'); w.className='sheetwrap'; w.style.justifyContent='center'; w.innerHTML=`<div class="sysdlg" role="dialog" aria-label="Autorisation Android"><div class="row g12" style="margin-bottom:10px"><span style="width:36px;height:36px;border-radius:9px;overflow:hidden;display:block">${APPICON(36)}</span><p style="font-size:15px;color:#57606A">Paramètres Android</p></div><p style="font-size:21px;line-height:28px;font-weight:700">Autoriser GardeFou à s’afficher par-dessus les autres applis ?</p><div class="acts"><button type="button" data-p="no">Refuser</button><button type="button" data-p="ok">Autoriser</button></div></div>`;
         P.stage.appendChild(w); w.addEventListener('click',ev=>{ const p=ev.target.closest('[data-p]'); if(!p) return; w.remove(); if(p.dataset.p==='ok') replaceTop('onb3','push'); else P.toast('Sans la pastille, GardeFou ne peut pas vous aider pendant un appel.'); }); break; }
-      case 'onb-done': store.set('onb','1'); resetTo(['launcher','home'],'fade'); break;
+      case 'onb-done': store.set('onb','1'); resetTo(['launcher'],'fade'); break;
     }
   });
 
